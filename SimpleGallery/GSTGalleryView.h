@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <ImageIO/ImageIO.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface GSTGalleryView : UIView
 {
@@ -22,8 +24,11 @@
 - (id) init;
 - (id) initWithFrame:(CGRect)frame;
 - (void) redrawView;
-- (void) changeImageButtonOnActivate: (UIButton *) button;
-- (void) changeImageButtonOnDeactivate: (UIButton *) button;
-- (UIImage *) getResizedImage: (UIImage *) image;
+
+// methods for customization
+- (void) changeImageButtonOnActivate: (UIButton*) button;
+- (void) changeImageButtonOnDeactivate: (UIButton*) button;
+- (UIViewContentMode) imagesContentMode;
+- (void) setImageFromInternetFor: (UIImageView*) view withUrl: (NSURL*) url;
 
 @end

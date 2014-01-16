@@ -137,48 +137,10 @@
     return self;
 }
 
-- (UIImage *) getResizedImage: (UIImage *) image
+- (UIViewContentMode) imagesContentMode
 {
-    CGSize newSize = self.frame.size;
-    
-    double ratio;
-    double delta;
-    CGPoint offset;
-    
-    //make a new square size, that is the resized imaged width
-    CGSize sz = CGSizeMake(newSize.width, newSize.width);
-    
-    //figure out if the picture is landscape or portrait, then
-    //calculate scale factor and offset
-    if (image.size.width > image.size.height) {
-        ratio = newSize.width / image.size.width;
-        delta = (ratio*image.size.width - ratio*image.size.height);
-        offset = CGPointMake(delta/2, 0);
-    } else {
-        ratio = newSize.width / image.size.height;
-        delta = (ratio*image.size.height - ratio*image.size.width);
-        offset = CGPointMake(0, delta/2);
-    }
-    
-    //make the final clipping rect based on the calculated values
-    CGRect clipRect = CGRectMake(-offset.x, -offset.y,
-                                 (ratio * image.size.width) + delta,
-                                 (ratio * image.size.height) + delta);
-    
-    
-    //start a new context, with scale factor 0.0 so retina displays get
-    //high quality image
-    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-        UIGraphicsBeginImageContextWithOptions(sz, YES, 0.0);
-    } else {
-        UIGraphicsBeginImageContext(sz);
-    }
-    UIRectClip(clipRect);
-    [image drawInRect:clipRect];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return newImage;
+    // http://i.stack.imgur.com/JHiqw.png
+    return UIViewContentModeScaleAspectFill;
 }
 
 - (void) redrawView
@@ -198,30 +160,35 @@
     int buttonHalfWidth = self.imageButton.frame.size.width / 2;
     
     for (id image in self.images) {
+        UIImageView *viewToAdd = [[UIImageView alloc] init];
+        viewToAdd.frame = self.bounds;
+        viewToAdd.contentMode = [self imagesContentMode];
+        viewToAdd.clipsToBounds = YES;
+        CGRect imageViewFrame = viewToAdd.frame;
+        imageViewFrame.origin.x = imageNumber * self.frame.size.width;
+        viewToAdd.frame = imageViewFrame;
+        
         if ([image isKindOfClass: [UIImage class]]) {
-            UIImageView *viewToAdd = [[UIImageView alloc] initWithImage: [self getResizedImage: image]];
-            CGRect imageViewFrame = CGRectMake(
-                                               (imageNumber * self.frame.size.width) + (int)((self.frame.size.width - viewToAdd.frame.size.width) / 2),
-                                               (int)((self.frame.size.height - viewToAdd.frame.size.height) / 2),
-                                               viewToAdd.frame.size.width,
-                                               viewToAdd.frame.size.height
-                                               );
-            
-            viewToAdd.frame = imageViewFrame;
-            [_line addSubview: viewToAdd];
-            
-            UIButton *imageButton = [NSKeyedUnarchiver unarchiveObjectWithData: [NSKeyedArchiver archivedDataWithRootObject: self.imageButton]];
-            CGRect imageButtonFrame = imageButton.frame;
-            imageButtonFrame.origin.x = (partSize * (imageNumber + 1)) - buttonHalfWidth;
-            imageButton.frame = imageButtonFrame;
-            imageButton.tag = imageNumber;
-            [imageButton addTarget:self action: @selector(imageButtonTap:) forControlEvents: UIControlEventTouchUpInside];
-            [_buttons addSubview: imageButton];
-            
-            imageNumber++;
+            viewToAdd.image = image;
+        } else if ([image isKindOfClass: [NSString class]]) {
+            viewToAdd.image = [UIImage imageNamed: image];
+        } else if ([image isKindOfClass: [NSURL class]]) {
+            [self setImageFromInternetFor: viewToAdd withUrl: image];
         } else {
-            @throw [NSException exceptionWithName: @"TypeMismatchException" reason: [NSString stringWithFormat:@"Object at index %i in array is not kind of UIImage", [self.images indexOfObject: image]] userInfo:nil];
+            @throw [NSException exceptionWithName: @"TypeMismatchException" reason: [NSString stringWithFormat:@"Object at index %i in array is not kind of UIImage, NSURL or NSString", [self.images indexOfObject: image]] userInfo: nil];
         }
+        
+        [_line addSubview: viewToAdd];
+        
+        UIButton *imageButton = [NSKeyedUnarchiver unarchiveObjectWithData: [NSKeyedArchiver archivedDataWithRootObject: self.imageButton]];
+        CGRect imageButtonFrame = imageButton.frame;
+        imageButtonFrame.origin.x = (partSize * (imageNumber + 1)) - buttonHalfWidth;
+        imageButton.frame = imageButtonFrame;
+        imageButton.tag = imageNumber;
+        [imageButton addTarget:self action: @selector(imageButtonTap:) forControlEvents: UIControlEventTouchUpInside];
+        [_buttons addSubview: imageButton];
+        
+        imageNumber++;
     }
     
     [self addSubview: _line];
@@ -230,6 +197,11 @@
     if (imageNumber > 0) {
         [self changeImageButtonOnActivate: _buttons.subviews[0]];
     }
+}
+
+- (void) setImageFromInternetFor: (UIImageView*) view withUrl: (NSURL*) url
+{
+    [view setImageWithURL: url];
 }
 
 - (void) changeImageButtonOnActivate: (UIButton *) button
