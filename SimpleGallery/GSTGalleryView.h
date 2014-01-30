@@ -4,6 +4,7 @@
 //
 //  Created by Efimov Kirill on 2014-01-15.
 //  Copyright (c) 2014 GSTeam. All rights reserved.
+//  https://github.com/Kirill89/iOS-code-snippets
 //
 
 #import <UIKit/UIKit.h>
