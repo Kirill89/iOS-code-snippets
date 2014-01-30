@@ -196,6 +196,7 @@
     [self addSubview: _buttons];
     
     if (imageNumber > 0) {
+        [self deactivateAllButtons];
         [self changeImageButtonOnActivate: _buttons.subviews[0]];
     }
 }
