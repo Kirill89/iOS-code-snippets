@@ -176,7 +176,7 @@
         } else if ([image isKindOfClass: [NSURL class]]) {
             [self setImageFromInternetFor: viewToAdd withUrl: image];
         } else {
-            @throw [NSException exceptionWithName: @"TypeMismatchException" reason: [NSString stringWithFormat:@"Object at index %i in array is not kind of UIImage, NSURL or NSString", [self.images indexOfObject: image]] userInfo: nil];
+            @throw [NSException exceptionWithName: @"TypeMismatchException" reason: [NSString stringWithFormat:@"Object at index %i in array is not kind of UIImage, NSURL or NSString", (int)[self.images indexOfObject: image]] userInfo: nil];
         }
         
         [_line addSubview: viewToAdd];
