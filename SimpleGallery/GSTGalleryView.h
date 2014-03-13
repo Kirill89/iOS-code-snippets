@@ -16,6 +16,8 @@
 @private
     UIView *_line;
     UIView *_buttons;
+    UIButton *_changeToLeft;
+    UIButton *_changeToRight;
 }
 
 @property NSMutableArray *images;

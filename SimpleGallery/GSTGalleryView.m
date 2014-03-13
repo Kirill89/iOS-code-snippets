@@ -88,6 +88,16 @@
     [self addGestureRecognizer: gestureRecognizerLeft];
     
     [self setClipsToBounds: YES];
+  
+    _changeToLeft = [[UIButton alloc] init];
+    _changeToLeft.backgroundColor = [UIColor clearColor];
+    [_changeToLeft addTarget: self action: @selector(swipeDirectionRight) forControlEvents: UIControlEventTouchUpInside];
+    [self addSubview: _changeToLeft];
+  
+    _changeToRight = [[UIButton alloc] init];
+    _changeToRight.backgroundColor = [UIColor clearColor];
+    [_changeToRight addTarget: self action: @selector(swipeDirectionLeft) forControlEvents: UIControlEventTouchUpInside];
+    [self addSubview: _changeToRight];
 }
 
 - (void)swipeDirectionRight
@@ -165,6 +175,10 @@
     if (_buttons) {
         [_buttons removeFromSuperview];
     }
+  
+    int selfHalfWidth = self.frame.size.width / 2;
+    _changeToLeft.frame = CGRectMake(0, 0, selfHalfWidth, self.frame.size.height);
+    _changeToRight.frame = CGRectMake(selfHalfWidth, 0, selfHalfWidth, self.frame.size.height);
     
     _line = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 0, 0)];
     _buttons = [[UIView alloc] initWithFrame: CGRectMake(0, [self imageButtonsTop], self.frame.size.width, self.imageButton.frame.size.height)];
@@ -201,6 +215,10 @@
         
         imageNumber++;
     }
+  
+    [self bringSubviewToFront: _changeToLeft];
+    [self bringSubviewToFront: _changeToRight];
+    [self bringSubviewToFront: _buttons];
     
     [self addSubview: _line];
     [self addSubview: _buttons];
