@@ -31,5 +31,7 @@
 - (void) changeImageButtonOnDeactivate: (UIButton*) button;
 - (UIViewContentMode) imagesContentMode;
 - (void) setImageFromInternetFor: (UIImageView*) view withUrl: (NSURL*) url;
+- (float) imageButtonsTop;
+- (float) imageButtonLeft: (int)buttonNumber;
 
 @end

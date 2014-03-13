@@ -144,6 +144,19 @@
     return UIViewContentModeScaleAspectFill;
 }
 
+- (float) imageButtonsTop
+{
+    int quarter = self.frame.size.height / 4;
+    return quarter * 3;
+}
+
+- (float) imageButtonLeft: (int)buttonNumber
+{
+    int partSize = self.frame.size.width / (([self.images count] - 1) + 2);
+    int buttonHalfWidth = self.imageButton.frame.size.width / 2;
+    return (partSize * (buttonNumber + 1)) - buttonHalfWidth;
+}
+
 - (void) redrawView
 {
     if (_line) {
@@ -154,12 +167,9 @@
     }
     
     _line = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 0, 0)];
-    int quarter = self.frame.size.height / 4;
-    _buttons = [[UIView alloc] initWithFrame: CGRectMake(0, quarter * 3, self.frame.size.width, self.imageButton.frame.size.height)];
+    _buttons = [[UIView alloc] initWithFrame: CGRectMake(0, [self imageButtonsTop], self.frame.size.width, self.imageButton.frame.size.height)];
     int imageNumber = 0;
-    int partSize = self.frame.size.width / (([self.images count] - 1) + 2);
-    int buttonHalfWidth = self.imageButton.frame.size.width / 2;
-    
+  
     for (id image in self.images) {
         UIImageView *viewToAdd = [[UIImageView alloc] init];
         viewToAdd.frame = self.bounds;
@@ -183,7 +193,7 @@
         
         UIButton *imageButton = [NSKeyedUnarchiver unarchiveObjectWithData: [NSKeyedArchiver archivedDataWithRootObject: self.imageButton]];
         CGRect imageButtonFrame = imageButton.frame;
-        imageButtonFrame.origin.x = (partSize * (imageNumber + 1)) - buttonHalfWidth;
+        imageButtonFrame.origin.x = [self imageButtonLeft: imageNumber];
         imageButton.frame = imageButtonFrame;
         imageButton.tag = imageNumber;
         [imageButton addTarget:self action: @selector(imageButtonTap:) forControlEvents: UIControlEventTouchUpInside];
