@@ -23,6 +23,7 @@
 @property NSMutableArray *images;
 @property float animationDuration;
 @property UIButton *imageButton;
+@property BOOL allowImageCycle;
 
 - (id) init;
 - (id) initWithFrame:(CGRect)frame;

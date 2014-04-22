@@ -17,6 +17,7 @@
 - (void) imageButtonTap: (id)sender;
 - (void) deactivateAllButtons;
 - (void) activateButton;
+- (void) showImageBy: (NSInteger)index;
 @end
 
 @implementation GSTGalleryView
@@ -38,16 +39,21 @@
     }
 }
 
-- (void) imageButtonTap: (id)sender
+- (void) showImageBy: (NSInteger)index
 {
-    NSInteger imageNumber = ((UIControl *) sender).tag;
     [UIView animateWithDuration: self.animationDuration animations: ^(void) {
         CGRect lineFrame = _line.frame;
-        lineFrame.origin.x = -(self.frame.size.width * imageNumber);
+        lineFrame.origin.x = -(self.frame.size.width * index);
         _line.frame = lineFrame;
     } completion: ^(BOOL finished) {
         [self activateButton];
     }];
+}
+
+- (void) imageButtonTap: (id)sender
+{
+    NSInteger imageNumber = ((UIControl *) sender).tag;
+    [self showImageBy: imageNumber];
 }
 
 - (UIImage *)imageWithColor:(UIColor *)color andSize: (CGSize) size
@@ -67,6 +73,8 @@
 
 - (void) internalInit
 {
+    self.allowImageCycle = NO;
+
     self.imageButton = [[UIButton alloc] init];
     CGSize buttonSize = CGSizeMake(10.0f, 10.0f);
     UIImage *normalStateImage = [self imageWithColor: [UIColor redColor] andSize: buttonSize];
@@ -103,6 +111,9 @@
 - (void)swipeDirectionRight
 {
     if (-_line.frame.origin.x < self.frame.size.width) {
+        if (self.allowImageCycle && [self.images count] > 0) {
+            [self showImageBy: [self.images count] - 1];
+        }
         return;
     }
     
@@ -118,6 +129,9 @@
 - (void)swipeDirectionLeft
 {
     if (-_line.frame.origin.x >= self.frame.size.width * ([self.images count] - 1)) {
+        if (self.allowImageCycle && [self.images count] > 0) {
+            [self showImageBy: 0];
+        }
         return;
     }
     
