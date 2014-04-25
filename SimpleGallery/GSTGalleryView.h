@@ -24,6 +24,7 @@
 @property float animationDuration;
 @property UIButton *imageButton;
 @property BOOL allowImageCycle;
+@property (readonly) int currentPhotoIndex;
 
 - (id) init;
 - (id) initWithFrame:(CGRect)frame;

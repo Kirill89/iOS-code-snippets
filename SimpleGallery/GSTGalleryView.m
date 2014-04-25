@@ -243,6 +243,11 @@
     }
 }
 
+- (int) currentPhotoIndex
+{
+    return abs(_line.frame.origin.x / self.frame.size.width);
+}
+
 - (void) setImageFromInternetFor: (UIImageView*) view withUrl: (NSURL*) url
 {
     [view setImageWithURL: url];
